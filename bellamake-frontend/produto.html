@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Produto | BellaMake</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">BellaMake</a>
+            
+            <nav class="desktop-nav">
+                <a href="index.html"><i class="fas fa-arrow-left"></i> Voltar para a Loja</a>
+            </nav>
+
+            <div class="nav-icons">
+                <div class="nav-btn" onclick="abrirModal('login-modal')">
+                    <i class="fas fa-user-circle"></i> <span id="user-label" style="font-size: 0.8rem; margin-left: 5px;">Entrar</span>
+                </div>
+                <div class="nav-btn" onclick="toggleCart()">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span id="cart-count">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <div class="product-detail-container">
+            <div class="detail-left">
+                <img id="detail-img" src="" alt="Imagem do Produto" style="max-width: 100%; max-height: 400px; object-fit: contain;">
+            </div>
+
+            <div class="detail-right">
+                <h1 id="detail-title">Carregando produto...</h1>
+                
+                <div id="detail-rating" style="color: var(--gold); margin-bottom: 20px; font-size: 0.9rem;">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                    (Carregando avaliações)
+                </div>
+                
+                <div id="detail-price" class="detail-price">R$ 0,00</div>
+
+                <div class="cep-calc">
+                    <label style="font-weight: 600; color: #555;"><i class="fas fa-map-marker-alt"></i> Calcular Frete e Prazo:</label>
+                    <div class="cep-input-group">
+                        <input type="text" id="cep-input" class="form-input" placeholder="00000-000" style="margin:0;">
+                        <button class="btn-login" style="width: auto; margin:0; padding: 0 20px;" onclick="calcularFrete()">OK</button>
+                    </div>
+                    <div id="frete-result" style="display: none; margin-top: 10px;"></div>
+                </div>
+
+                <button id="btn-comprar-final" class="btn-login" style="font-size: 1.1rem; padding: 15px; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px;">
+                    <i class="fas fa-shopping-cart"></i> Adicionar à Sacola
+                </button>
+
+                <div style="margin-top: 25px; font-size: 0.9rem; color: #666; display: flex; gap: 20px;">
+                    <span><i class="fas fa-check-circle" style="color: var(--purple-light);"></i> Produto Original</span>
+                    <span><i class="fas fa-shield-alt" style="color: var(--purple-light);"></i> Garantia de 30 dias</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="reviews-section">
+            <h3 style="color: var(--purple-deep); border-bottom: 2px solid var(--gold); display: inline-block; padding-bottom: 5px; margin-bottom: 20px;">Descrição do Produto</h3>
+            <p id="detail-desc" class="detail-desc" style="margin-bottom: 40px;">
+                Carregando descrição detalhada...
+            </p>
+
+            <h3 style="color: var(--purple-deep); border-bottom: 2px solid var(--gold); display: inline-block; padding-bottom: 5px; margin-bottom: 20px;">Avaliações de Clientes</h3>
+            
+            <div class="review-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <strong>Ana Clara</strong> <span style="color:#999; font-size:0.8rem;">- Compra verificada</span>
+                <p style="margin-top: 5px; color: #555;">Simplesmente perfeito! A pigmentação é incrível e chegou super rápido.</p>
+            </div>
+
+            <div class="review-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></div>
+                <strong>Beatriz Souza</strong> <span style="color:#999; font-size:0.8rem;">- Compra verificada</span>
+                <p style="margin-top: 5px; color: #555;">Gostei muito do produto, a qualidade da Maybelline é indiscutível. Só a entrega que demorou um dia a mais.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="sidebar" id="cart-sidebar">
+        <div class="sidebar-header">
+            <h2>Sua Sacola</h2>
+            <span class="close-btn" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items-container" id="cart-items">
+            <p style="text-align:center; color:#777; margin-top:20px;">Carregando...</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">Total: R$ <span id="cart-total">0,00</span></div>
+            <button class="btn-login" style="margin-top: 15px;" onclick="abrirCheckout()">Finalizar Compra</button>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="close-modal" onclick="fecharModal('login-modal')">&times;</span>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('cliente')">Cliente</div>
+                <div class="tab" onclick="switchTab('staff')">Staff</div>
+            </div>
+            <div id="tab-cliente" class="tab-content active">
+                <div id="form-login">
+                    <h3>Bem-vindo(a)!</h3>
+                    <input type="email" id="login-email" class="form-input" placeholder="Seu E-mail">
+                    <input type="password" id="login-pass" class="form-input" placeholder="Sua Senha">
+                    <button class="btn-login" onclick="loginCliente()">Entrar</button>
+                    <div class="auth-toggle">Não tem conta? <span onclick="toggleAuthMode('cadastro')">Cadastre-se</span></div>
+                </div>
+                <div id="form-cadastro" style="display:none;">
+                    <h3>Criar Conta</h3>
+                    <input type="text" id="cad-nome" class="form-input" placeholder="Nome">
+                    <input type="email" id="cad-email" class="form-input" placeholder="E-mail">
+                    <input type="password" id="cad-pass" class="form-input" placeholder="Senha">
+                    <button class="btn-login" onclick="cadastrarCliente()">Cadastrar</button>
+                    <div class="auth-toggle">Já tem conta? <span onclick="toggleAuthMode('login')">Login</span></div>
+                </div>
+            </div>
+            <div id="tab-staff" class="tab-content">
+                <h3>Acesso Restrito</h3>
+                <button class="btn-login" style="background:#333; color:gold" onclick="window.location.href='sistema_login.html'">Sistema Interno</button>
+            </div>
+        </div>
+    </div>
+    <div id="checkout-modal" class="modal-overlay">
+    <div class="modal-box wide"> <span class="close-btn-modal" onclick="fecharCheckout()">&times;</span>
+        
+        <h2 style="color: var(--purple-deep); margin-bottom: 20px;">Finalizar Pagamento</h2>
+
+        <div class="payment-tabs">
+            <div id="tab-card" class="payment-tab active" onclick="mudarPagamento('cartao')">
+                <i class="far fa-credit-card"></i> Cartão de Crédito
+            </div>
+            <div id="tab-pix" class="payment-tab" onclick="mudarPagamento('pix')">
+                <i class="brands fa-pix"></i> Pix (Instantâneo)
+            </div>
+        </div>
+
+        <div id="content-card" class="payment-content active">
+            <input type="text" class="form-input" placeholder="Número do Cartão" maxlength="19">
+            <input type="text" class="form-input" placeholder="Nome Impresso no Cartão">
+            <div class="card-grid">
+                <input type="text" class="form-input" placeholder="Validade (MM/AA)" maxlength="5">
+                <input type="text" class="form-input" placeholder="CVV" maxlength="3">
+            </div>
+            <select class="form-input">
+                <option>1x sem juros</option>
+                <option>2x sem juros</option>
+                <option>3x sem juros</option>
+            </select>
+        </div>
+
+        <div id="content-pix" class="payment-content">
+            <div class="pix-container">
+                <p style="margin-bottom: 10px;">Escaneie o QR Code ou copie a chave:</p>
+                
+                <div class="qr-placeholder">
+                    <i class="fas fa-qrcode" style="font-size: 80px; color: #333;"></i>
+                </div>
+
+                <div class="pix-key" id="pix-key-text">00020126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-426614174000</div>
+                
+                <button class="btn-add" onclick="copiarPix()" style="width: auto; margin: 0 auto;">
+                    <i class="far fa-copy"></i> Copiar Chave
+                </button>
+                
+                <p style="font-size: 0.8rem; color: #777; margin-top: 15px;">
+                    <i class="fas fa-clock"></i> O pagamento é aprovado em segundos.
+                </p>
+            </div>
+        </div>
+
+        <div class="checkout-total">
+            Total a Pagar: R$ <span id="checkout-total-display">0,00</span>
+        </div>
+
+        <button id="btn-finish" class="btn-login" style="margin-top: 20px; font-size: 1.1rem;" onclick="finalizarPedido()">
+            CONFIRMAR PAGAMENTO <i class="fas fa-check"></i>
+        </button>
+    </div>
+</div>
+
+    <footer>
+        <div class="footer-bottom">
+            &copy; 2026 BellaMake Cosméticos - Todos os direitos reservados.
+            &copy; Realizado por APGJ Soluctions
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

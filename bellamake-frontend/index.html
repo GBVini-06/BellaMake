@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BellaMake | Cosméticos Premium</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <a href="#" class="logo">BellaMake</a>
+            
+            <nav class="desktop-nav">
+                <a href="#" onclick="abrirModal('modal-rastreio')"><i class="fas fa-truck"></i> Rastrear Pedido</a>
+                <a href="#" onclick="abrirModal('modal-troca')"><i class="fas fa-sync-alt"></i> Trocas e Devoluções</a>
+            </nav>
+
+            <div class="nav-icons">
+                <button class="nav-btn" onclick="abrirModal('login-modal')" title="Minha Conta">
+                    <i class="fas fa-user-circle"></i> <span id="user-label" style="font-size: 0.8rem; margin-left:5px;">Entrar</span>
+                </button>
+                <button class="nav-btn" onclick="toggleCart()" title="Carrinho">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span id="cart-count">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h1>Realce sua <span>Beleza</span></h1>
+        <p>As melhores marcas internacionais com preços exclusivos.</p>
+    </div>
+
+    <div class="container">
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Buscando produtos...
+        </div>
+        <div class="products-grid" id="products-container"></div>
+    </div>
+
+    <div class="sidebar" id="cart-sidebar">
+        <div class="sidebar-header">
+            <h2>Sua Sacola</h2>
+            <span class="close-btn" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items-container" id="cart-items">
+            <p style="text-align:center; color:#777; margin-top:20px;">Sua sacola está vazia.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">Total: R$ <span id="cart-total">0,00</span></div>
+            <button class="btn-login" style="margin-top: 15px;" onclick="abrirCheckout()">Finalizar Compra</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>Sobre a BellaMake</h3>
+                <p>Somos apaixonados por beleza. Desde 2023 trazendo as melhores tendências de maquiagem do mundo para o Brasil com sofisticação e preço justo.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Políticas</h3>
+                <ul>
+                    <li><a href="#" onclick="abrirModal('modal-entrega')">Prazos e Frete</a></li>
+                    <li><a href="#" onclick="abrirModal('modal-politica-troca')">Política de Trocas</a></li>
+                    <li><a href="#" onclick="abrirModal('modal-privacidade')">Privacidade</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contato</h3>
+                <p><i class="fab fa-whatsapp"></i> (11) 99999-9999</p>
+                <p><i class="fas fa-envelope"></i> sac@bellamake.com.br</p>
+                <div class="social-icons">
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-facebook"></i>
+                    <i class="fab fa-tiktok"></i>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Pagamento</h3>
+                <div class="payment-icons">
+                    <i class="fab fa-cc-visa"></i>
+                    <i class="fab fa-cc-mastercard"></i>
+                    <i class="fas fa-barcode"></i>
+                    <i class="fab fa-pix"></i>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 BellaMake Cosméticos - Todos os direitos reservados.
+            &copy; Realizado por APGJ Soluctions
+        </div>
+    </footer>
+
+   <div class="modal-overlay" id="login-modal">
+        <div class="modal-box">
+            <span class="close-btn-modal" onclick="fecharModal('login-modal')">&times;</span>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('cliente')">Sou Cliente</div>
+                <div class="tab" onclick="switchTab('staff')">Sou Colaborador</div>
+            </div>
+
+            <div id="tab-cliente" class="tab-content active">
+                
+                <div id="form-login">
+                    <h3>Bem-vindo(a) de volta!</h3>
+                    <p style="font-size: 0.8rem; color: #777;">Acesse sua conta para ver seus pedidos.</p>
+                    <input type="email" id="login-email" class="form-input" placeholder="Seu E-mail">
+                    <input type="password" id="login-pass" class="form-input" placeholder="Sua Senha">
+                    <button class="btn-login" onclick="loginCliente()">Entrar</button>
+                    
+                    <p class="auth-toggle">
+                        Ainda não tem conta? <span onclick="toggleAuthMode('cadastro')">Cadastre-se aqui</span>
+                    </p>
+                </div>
+
+                <div id="form-cadastro" style="display: none;">
+                    <h3>Criar Nova Conta</h3>
+                    <p style="font-size: 0.8rem; color: #777;">Preencha os dados para se registrar.</p>
+                    <input type="text" id="cad-nome" class="form-input" placeholder="Nome Completo">
+                    <input type="email" id="cad-email" class="form-input" placeholder="Seu Melhor E-mail">
+                    <input type="password" id="cad-pass" class="form-input" placeholder="Crie uma Senha">
+                    <button class="btn-login" style="background: var(--pink-vibrant);" onclick="cadastrarCliente()">Cadastrar</button>
+                    
+                    <p class="auth-toggle">
+                        Já tem cadastro? <span onclick="toggleAuthMode('login')">Fazer Login</span>
+                    </p>
+                </div>
+
+            </div>
+
+            <div id="tab-staff" class="tab-content">
+    <h3>Acesso Restrito</h3>
+    <p style="margin-bottom: 15px; font-size: 0.9rem;">Área exclusiva para colaboradores.</p>
+    
+    <button class="btn-login" style="background:#333; color:gold" onclick="window.location.href='sistema_login.html'">
+        <i class="fas fa-lock"></i> Acessar Sistema Interno
+    </button>
+</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-rastreio">
+        <div class="modal-box">
+            <span class="close-btn-modal" onclick="fecharModal('modal-rastreio')">&times;</span>
+            <h2 style="color:var(--purple-deep)">Rastrear Pedido</h2>
+            <p>Digite o código enviado para o seu e-mail.</p>
+            <input type="text" id="input-rastreio" class="form-input" placeholder="Ex: BM123456BR">
+            <button class="btn-login" onclick="simularRastreio()">Buscar</button>
+            <div id="resultado-rastreio" style="margin-top: 15px; padding: 10px; background: #f0f0f0; border-radius: 5px; display: none;"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-troca">
+        <div class="modal-box">
+            <span class="close-btn-modal" onclick="fecharModal('modal-troca')">&times;</span>
+            <h2 style="color:var(--pink-vibrant)">Solicitar Troca</h2>
+            <p>Preencha os dados abaixo para iniciar o processo.</p>
+            <input type="text" class="form-input" placeholder="Número do Pedido">
+            <input type="email" class="form-input" placeholder="Seu E-mail">
+            <textarea class="form-input" rows="3" placeholder="Motivo da troca (Ex: Produto danificado, cor errada)"></textarea>
+            <button class="btn-login" onclick="alert('Solicitação enviada! Responderemos em até 24h.'); fecharModal('modal-troca')">Enviar Solicitação</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-entrega">
+        <div class="modal-box wide">
+            <span class="close-btn-modal" onclick="fecharModal('modal-entrega')">&times;</span>
+            <h2>Prazos e Frete</h2>
+            <p>Confira a estimativa de entrega para sua região:</p>
+            <table class="info-table">
+                <tr><th>Região</th><th>Prazo Estimado</th></tr>
+                <tr><td>Sudeste</td><td>2 a 5 dias úteis</td></tr>
+                <tr><td>Sul</td><td>3 a 7 dias úteis</td></tr>
+                <tr><td>Centro-Oeste</td><td>4 a 8 dias úteis</td></tr>
+                <tr><td>Nordeste</td><td>5 a 12 dias úteis</td></tr>
+                <tr><td>Norte</td><td>7 a 15 dias úteis</td></tr>
+            </table>
+            <small>* Prazos contados após confirmação do pagamento.</small>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-politica-troca">
+        <div class="modal-box wide">
+            <span class="close-btn-modal" onclick="fecharModal('modal-politica-troca')">&times;</span>
+            <h2>Política de Trocas</h2>
+            <div style="text-align: left; margin-top: 15px;">
+                <p><strong>1. Arrependimento:</strong> Você tem até 7 dias corridos após o recebimento para devolver o produto sem custo, desde que a embalagem não tenha sido aberta.</p>
+                <p><strong>2. Defeito:</strong> Garantia de 30 dias para produtos com defeito de fabricação.</p>
+                <p><strong>3. Condições:</strong> O produto deve estar na embalagem original, sem indícios de uso e com a nota fiscal.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-privacidade">
+        <div class="modal-box wide" style="max-height: 80vh; overflow-y: auto;">
+            <span class="close-btn-modal" onclick="fecharModal('modal-privacidade')">&times;</span>
+            <h2>Política de Privacidade</h2>
+            <div style="text-align: left; margin-top: 15px; font-size: 0.9rem; line-height: 1.6;">
+                <p>Na <strong>BellaMake</strong>, privacidade e segurança são prioridades e nos comprometemos com a transparência do tratamento de dados pessoais dos nossos usuários/clientes.</p>
+                
+                <h4 style="margin-top:15px; color:var(--purple-deep)">1. Coleta de Dados</h4>
+                <p>Coletamos informações essenciais para a prestação dos nossos serviços, como Nome, E-mail, Endereço e CPF, utilizados estritamente para faturamento e entrega dos produtos.</p>
+                
+                <h4 style="margin-top:15px; color:var(--purple-deep)">2. Compartilhamento</h4>
+                <p>Não vendemos ou comercializamos seus dados. O compartilhamento ocorre apenas com empresas parceiras essenciais para a operação (ex: transportadoras e gateways de pagamento).</p>
+                
+                <h4 style="margin-top:15px; color:var(--purple-deep)">3. Segurança (LGPD)</h4>
+                <p>Adotamos medidas técnicas de segurança para proteger seus dados pessoais de acessos não autorizados, em conformidade com a Lei Geral de Proteção de Dados (Lei 13.709/2018).</p>
+                
+                <h4 style="margin-top:15px; color:var(--purple-deep)">4. Cookies</h4>
+                <p>Utilizamos cookies para melhorar sua experiência de navegação, lembrando suas preferências e itens no carrinho.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-rastreio">
+        <div class="modal-box">
+            <span class="close-btn-modal" onclick="fecharModal('modal-rastreio')">&times;</span>
+            <h2 style="color:var(--purple-deep)">Rastrear Pedido</h2>
+            <p>Digite o código enviado para o seu e-mail.</p>
+            <input type="text" id="input-rastreio" class="form-input" placeholder="Ex: BM123456BR">
+            <button class="btn-login" onclick="simularRastreio()">Buscar</button>
+            <div id="resultado-rastreio" style="margin-top: 15px; padding: 10px; background: #f0f0f0; border-radius: 5px; display: none;"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-troca">
+        <div class="modal-box">
+            <span class="close-btn-modal" onclick="fecharModal('modal-troca')">&times;</span>
+            <h2 style="color:var(--pink-vibrant)">Solicitar Troca</h2>
+            <p>Preencha os dados abaixo para iniciar o processo.</p>
+            <input type="text" class="form-input" placeholder="Número do Pedido">
+            <input type="email" class="form-input" placeholder="Seu E-mail">
+            <textarea class="form-input" rows="3" placeholder="Motivo da troca (Ex: Produto danificado, cor errada)"></textarea>
+            <button class="btn-login" onclick="alert('Solicitação enviada! Responderemos em até 24h.'); fecharModal('modal-troca')">Enviar Solicitação</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-entrega">
+        <div class="modal-box wide">
+            <span class="close-btn-modal" onclick="fecharModal('modal-entrega')">&times;</span>
+            <h2>Prazos e Frete</h2>
+            <p>Confira a estimativa de entrega para sua região:</p>
+            <table class="info-table">
+                <tr><th>Região</th><th>Prazo Estimado</th></tr>
+                <tr><td>Sudeste</td><td>2 a 5 dias úteis</td></tr>
+                <tr><td>Sul</td><td>3 a 7 dias úteis</td></tr>
+                <tr><td>Centro-Oeste</td><td>4 a 8 dias úteis</td></tr>
+                <tr><td>Nordeste</td><td>5 a 12 dias úteis</td></tr>
+                <tr><td>Norte</td><td>7 a 15 dias úteis</td></tr>
+            </table>
+            <small>* Prazos contados após confirmação do pagamento.</small>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-politica-troca">
+        <div class="modal-box wide">
+            <span class="close-btn-modal" onclick="fecharModal('modal-politica-troca')">&times;</span>
+            <h2>Política de Trocas</h2>
+            <div style="text-align: left; margin-top: 15px;">
+                <p><strong>1. Arrependimento:</strong> Você tem até 7 dias corridos após o recebimento para devolver o produto sem custo, desde que a embalagem não tenha sido aberta.</p>
+                <p><strong>2. Defeito:</strong> Garantia de 30 dias para produtos com defeito de fabricação.</p>
+                <p><strong>3. Condições:</strong> O produto deve estar na embalagem original, sem indícios de uso e com a nota fiscal.</p>
+            </div>
+        </div>
+    </div>
+    <div id="checkout-modal" class="modal-overlay">
+    <div class="modal-box wide"> <span class="close-btn-modal" onclick="fecharCheckout()">&times;</span>
+        
+        <h2 style="color: var(--purple-deep); margin-bottom: 20px;">Finalizar Pagamento</h2>
+
+        <div class="payment-tabs">
+            <div id="tab-card" class="payment-tab active" onclick="mudarPagamento('cartao')">
+                <i class="far fa-credit-card"></i> Cartão de Crédito
+            </div>
+            <div id="tab-pix" class="payment-tab" onclick="mudarPagamento('pix')">
+                <i class="brands fa-pix"></i> Pix (Instantâneo)
+            </div>
+        </div>
+
+        <div id="content-card" class="payment-content active">
+            <input type="text" class="form-input" placeholder="Número do Cartão" maxlength="19">
+            <input type="text" class="form-input" placeholder="Nome Impresso no Cartão">
+            <div class="card-grid">
+                <input type="text" class="form-input" placeholder="Validade (MM/AA)" maxlength="5">
+                <input type="text" class="form-input" placeholder="CVV" maxlength="3">
+            </div>
+            <select class="form-input">
+                <option>1x sem juros</option>
+                <option>2x sem juros</option>
+                <option>3x sem juros</option>
+            </select>
+        </div>
+
+        <div id="content-pix" class="payment-content">
+            <div class="pix-container">
+                <p style="margin-bottom: 10px;">Escaneie o QR Code ou copie a chave:</p>
+                
+                <div class="qr-placeholder">
+                    <i class="fas fa-qrcode" style="font-size: 80px; color: #333;"></i>
+                </div>
+
+                <div class="pix-key" id="pix-key-text">00020126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-426614174000</div>
+                
+                <button class="btn-add" onclick="copiarPix()" style="width: auto; margin: 0 auto;">
+                    <i class="far fa-copy"></i> Copiar Chave
+                </button>
+                
+                <p style="font-size: 0.8rem; color: #777; margin-top: 15px;">
+                    <i class="fas fa-clock"></i> O pagamento é aprovado em segundos.
+                </p>
+            </div>
+        </div>
+
+        <div class="checkout-total">
+            Total a Pagar: R$ <span id="checkout-total-display">0,00</span>
+        </div>
+
+        <button id="btn-finish" class="btn-login" style="margin-top: 20px; font-size: 1.1rem;" onclick="finalizarPedido()">
+            CONFIRMAR PAGAMENTO <i class="fas fa-check"></i>
+        </button>
+    </div>
+</div>
+
+    <script src="script.js"></script>
+</body>
+</html>

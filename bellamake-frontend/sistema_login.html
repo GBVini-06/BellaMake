@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BellaMake | Sistema Interno</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4a148c;   /* Roxo Profundo */
+            --secondary: #7c43bd; /* Roxo Claro */
+            --accent: #e91e63;    /* Rosa Vibrante */
+            --gold: #d4af37;      /* Dourado */
+            --light: #f3f0f5;
+            --dark: #121212;
+            --success: #27ae60;
+            --danger: #c0392b;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--light); height: 100vh; overflow: hidden; }
+
+        /* --- TELA DE LOGIN --- */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        .login-box {
+            background: white; padding: 40px; border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); width: 380px; text-align: center;
+            border-top: 5px solid var(--gold);
+        }
+        .login-input {
+            width: 100%; padding: 12px; margin: 10px 0;
+            border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 1rem;
+        }
+        .btn-login {
+            width: 100%; padding: 12px; background: var(--primary);
+            color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; margin-top: 10px; font-weight: bold; transition: 0.3s;
+        }
+        .btn-login:hover { background: var(--secondary); }
+        
+        /* Botão Voltar ao Site */
+        .btn-back-site {
+            background: transparent; color: #666; border: 1px solid #ddd; margin-top: 10px;
+        }
+        .btn-back-site:hover {
+            background: #f9f9f9; color: var(--primary); border-color: var(--primary);
+        }
+
+        /* Botões de Atalho para Teste */
+        .quick-login { display: flex; gap: 5px; margin-top: 15px; justify-content: center; }
+        .quick-btn { font-size: 0.75rem; padding: 5px 10px; cursor: pointer; background: #eee; border: 1px solid #ccc; border-radius: 4px; }
+        .quick-btn:hover { background: var(--gold); color: black; border-color: var(--gold); }
+
+        /* --- SISTEMA PRINCIPAL --- */
+        #app-container { display: none; height: 100vh; display: flex; }
+        
+        .sidebar { width: 260px; background-color: #2e1a36; color: white; display: flex; flex-direction: column; box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
+        .logo { padding: 25px; font-size: 1.5rem; font-weight: bold; background: var(--primary); text-align: center; border-bottom: 2px solid var(--gold); }
+        .user-info { padding: 20px; background: rgba(0,0,0,0.2); font-size: 0.9rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .menu { list-style: none; padding: 0; margin: 0; flex: 1; display: flex; flex-direction: column; }
+        .menu li { padding: 15px 20px; cursor: pointer; border-left: 5px solid transparent; transition: 0.3s; display: none; color: #ccc; }
+        .menu li:hover, .menu li.active { background-color: rgba(255,255,255,0.1); border-left-color: var(--accent); color: white; }
+        .menu li.visible { display: block; }
+
+        /* Itens de navegação no rodapé do menu */
+        .menu-footer { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); }
+
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; background: var(--light); }
+        
+        .view-section { display: none; animation: fadeIn 0.4s; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 5px; }
+        
+        /* Grid Vendedor */
+        .pdv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .product-item { 
+            background: white; border-radius: 8px; overflow: hidden; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s; position: relative;
+        }
+        .product-item:hover { transform: translateY(-5px); border: 2px solid var(--accent); }
+        .prod-img-box { height: 120px; display: flex; align-items: center; justify-content: center; padding: 10px; background: #fff; }
+        .prod-img-box img { max-height: 100%; max-width: 100%; }
+        .prod-info { padding: 10px; text-align: center; }
+        .prod-price { color: var(--accent); font-weight: bold; font-size: 1.1rem; }
+        .prod-stock { font-size: 0.8rem; color: #777; }
+
+        /* Tabela Estoque */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #ddd; vertical-align: middle; }
+        .img-thumb { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; border: 1px solid #ddd; vertical-align: middle; margin-right: 10px; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .error-msg { background-color: #fce4e4; color: #cc0033; padding: 10px; border-radius: 5px; margin-bottom: 15px; display: none; }
+
+        /* Loading Overlay */
+        #system-loading {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9);
+            z-index: 2000; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: var(--primary); font-size: 1.2rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="system-loading">
+        <i class="fas fa-spinner fa-spin fa-3x" style="color: var(--accent); margin-bottom: 20px;"></i>
+        <span>Carregando Sistema e Dados...</span>
+    </div>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="border:none; color: var(--primary)">BellaMake</h2>
+            <p style="color: #666">Sistema Administrativo</p>
+            
+            <div id="login-error" class="error-msg">Credenciais inválidas.</div>
+            
+            <input type="email" id="email" class="login-input" placeholder="E-mail">
+            <input type="password" id="password" class="login-input" placeholder="Senha">
+            
+            <button class="btn-login" onclick="fazerLogin()">ACESSAR</button>
+            <button class="btn-login btn-back-site" onclick="irParaSite()">
+                <i class="fas fa-arrow-left"></i> Voltar para a Loja
+            </button>
+            
+            <p style="margin-top: 20px; font-size: 0.8rem; color: #888;">Acesso Rápido:</p>
+            <div class="quick-login">
+                <button class="quick-btn" onclick="preencherLogin('gerente')">👮‍♀️ Gerente</button>
+                <button class="quick-btn" onclick="preencherLogin('vendedor')">👩‍💼 Vendedor</button>
+                <button class="quick-btn" onclick="preencherLogin('estoque')">📦 Estoque</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container">
+        
+        <div class="sidebar">
+            <div class="logo">BellaMake <span style="font-size:0.8rem; color:var(--gold)">Sys</span></div>
+            <div class="user-info">
+                <div style="font-size: 1.1rem; font-weight: bold;" id="user-name-display">Usuário</div>
+                <small id="user-role-display" style="color: var(--accent)">Cargo</small>
+            </div>
+            
+            <ul class="menu">
+                <li id="menu-vendas" onclick="navegar('vendas')"><i class="fas fa-cash-register"></i> Ponto de Venda</li>
+                <li id="menu-estoque" onclick="navegar('estoque')"><i class="fas fa-boxes"></i> Controle Estoque</li>
+                <li id="menu-admin" onclick="navegar('admin')"><i class="fas fa-chart-line"></i> Dashboard</li>
+                <li id="menu-usuarios" onclick="navegar('usuarios')"><i class="fas fa-users-cog"></i> Equipe</li>
+                
+                <div class="menu-footer">
+                    <li class="visible" onclick="irParaSite()" style="border-left:none;">
+                        <i class="fas fa-store"></i> Ir para a Loja
+                    </li>
+                    <li class="visible" onclick="fazerLogout()" style="background: rgba(0,0,0,0.3); border-left: none; color: #f48fb1;">
+                        <i class="fas fa-sign-out-alt"></i> Sair (Logout)
+                    </li>
+                </div>
+            </ul>
+        </div>
+
+        <div class="main-content">
+
+            <div id="view-vendas" class="view-section">
+                <h2><i class="fas fa-shopping-basket"></i> Novo Pedido (Interno)</h2>
+                <div style="display: flex; gap: 20px; height: calc(100vh - 150px);">
+                    <div style="flex: 2; overflow-y: auto; padding-right: 10px;">
+                        <div class="pdv-grid" id="lista-produtos-pdv"></div>
+                    </div>
+                    <div class="card" style="flex: 1; display: flex; flex-direction: column;">
+                        <h3 style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">Caixa Atual</h3>
+                        <div id="carrinho-lista" style="flex: 1; overflow-y: auto; margin-bottom: 10px;">
+                            <div style="text-align:center; color:#999; margin-top:50px;">
+                                <i class="fas fa-cart-arrow-down fa-2x"></i><br>Selecione produtos
+                            </div>
+                        </div>
+                        <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                            <div style="display:flex; justify-content:space-between; font-size: 1.2rem; font-weight: bold;">
+                                <span>Total:</span>
+                                <span id="total-venda" style="color: var(--success)">R$ 0,00</span>
+                            </div>
+                            <button class="btn-login" style="background: var(--success); margin-top: 15px;" onclick="fecharVenda()">
+                                <i class="fas fa-check"></i> Finalizar Venda
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-estoque" class="view-section">
+                <h2><i class="fas fa-warehouse"></i> Gestão de Estoque</h2>
+                <div class="card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th style="width: 150px;">Preço (R$)</th>
+                                <th style="width: 120px;">Qtd Atual</th>
+                                <th style="width: 100px;">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-estoque"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="view-admin" class="view-section">
+                <div style="display:flex; justify-content: space-between; align-items: center;">
+                    <h2>Dashboard Gerencial</h2>
+                    <button onclick="zerarHistorico()" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+                        <i class="fas fa-trash"></i> Limpar Dados
+                    </button>
+                </div>
+                
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <div class="card" style="flex: 1; text-align: center; border-left: 5px solid var(--success);">
+                        <h3>Total de Vendas</h3>
+                        <div style="font-size: 2.5rem; font-weight: bold; color: var(--dark)" id="dash-vendas">0</div>
+                        <small>Site + Loja Física</small>
+                    </div>
+                    <div class="card" style="flex: 1; text-align: center; border-left: 5px solid var(--primary);">
+                        <h3>Faturamento Total</h3>
+                        <div style="font-size: 2.5rem; font-weight: bold; color: var(--primary)" id="dash-fat">R$ 0,00</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-history"></i> Histórico Completo de Vendas</h3>
+                    <ul id="log-vendas" style="list-style: none; padding: 0; max-height: 400px; overflow-y: auto;">
+                        <li style="color:#777; padding:10px;">Nenhuma venda registrada.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="view-usuarios" class="view-section">
+                <h2>Cadastro de Equipe</h2>
+                <div style="display: flex; gap: 20px;">
+                    <div class="card" style="flex: 1;">
+                        <h3>Novo Funcionário</h3>
+                        <div class="form-group"><input type="text" id="novo-nome" class="form-control" placeholder="Nome Completo"></div>
+                        <div class="form-group"><input type="email" id="novo-email" class="form-control" placeholder="E-mail de Login"></div>
+                        <div class="form-group"><input type="password" id="nova-senha" class="form-control" placeholder="Senha Provisória"></div>
+                        <div class="form-group">
+                            <select id="novo-cargo" class="form-control">
+                                <option value="vendedor">Vendedor</option>
+                                <option value="estoquista">Estoquista</option>
+                                <option value="gerente">Gerente</option>
+                            </select>
+                        </div>
+                        <button class="btn-login" onclick="cadastrarUsuario()">Salvar Cadastro</button>
+                    </div>
+                    <div class="card" style="flex: 1;">
+                        <h3>Equipe Ativa</h3>
+                        <ul id="lista-equipe" style="padding-left: 20px; line-height: 1.8;"></ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURAÇÃO E DADOS ---
+        const API_URL = 'https://makeup-api.herokuapp.com/api/v1/products.json?brand=maybelline&product_type=lipstick';
+        const STORAGE_KEY = 'bellamake_vendas'; // CHAVE IMPORTANTE PARA CONECTAR COM O SITE
+        
+        // Simulação de Banco de Usuários
+        const dbUsuarios = [
+            { id: 1, nome: "Sofia Admin", email: "gerente@bella.com", senha: "123", cargo: "gerente" },
+            { id: 2, nome: "Ana Vendas", email: "ana@bella.com", senha: "123", cargo: "vendedor" },
+            { id: 3, nome: "Carlos Estoque", email: "carlos@bella.com", senha: "123", cargo: "estoquista" },
+            { id: 4, nome: "Admin", email: "admin", senha: "1234", cargo: "gerente" }
+        ];
+
+        let dbProdutos = [];
+        let dbVendas = [];
+        let usuarioLogado = null;
+        let carrinho = [];
+
+        // --- INICIALIZAÇÃO ---
+        window.onload = async () => {
+            await carregarDadosAPI();
+            carregarHistoricoVendas(); // Carrega vendas do LocalStorage
+        };
+
+        // Carrega vendas do localStorage (Site + Sistema)
+        function carregarHistoricoVendas() {
+            const dadosSalvos = localStorage.getItem(STORAGE_KEY);
+            if (dadosSalvos) {
+                dbVendas = JSON.parse(dadosSalvos);
+            }
+        }
+
+        async function carregarDadosAPI() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                
+                dbProdutos = data.slice(0, 15).map(item => ({
+                    id: item.id,
+                    nome: item.name,
+                    preco: parseFloat(item.price) * 5.5, 
+                    img: item.image_link,
+                    qtd: Math.floor(Math.random() * 15) + 5 
+                })).filter(p => !isNaN(p.preco));
+
+                document.getElementById('system-loading').style.display = 'none';
+            } catch (error) {
+                alert('Erro ao conectar com API. O sistema usará dados locais de emergência.');
+                document.getElementById('system-loading').style.display = 'none';
+                dbProdutos = [
+                    { id: 999, nome: "Batom Demo Offline", preco: 29.90, qtd: 10, img: "https://via.placeholder.com/150" }
+                ];
+            }
+        }
+
+        // --- FUNÇÃO PARA VOLTAR AO SITE ---
+        function irParaSite() {
+            window.location.href = 'index.html';
+        }
+
+        // --- LOGIN ---
+        function preencherLogin(tipo) {
+            const inputs = {
+                'gerente': ['gerente@bella.com', '123'],
+                'vendedor': ['ana@bella.com', '123'],
+                'estoque': ['carlos@bella.com', '123']
+            };
+            document.getElementById('email').value = inputs[tipo][0];
+            document.getElementById('password').value = inputs[tipo][1];
+            document.getElementById('login-error').style.display = 'none';
+        }
+
+        function fazerLogin() {
+            const emailInput = document.getElementById('email').value.trim().toLowerCase();
+            const passInput = document.getElementById('password').value.trim();
+            
+            // Permite login com e-mail ou nome de usuário simples (ex: "admin")
+            const user = dbUsuarios.find(u => 
+                (u.email.toLowerCase() === emailInput || u.email === emailInput) && u.senha === passInput
+            );
+
+            if (user) {
+                usuarioLogado = user;
+                iniciarSessao();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        function iniciarSessao() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
+            
+            document.getElementById('user-name-display').innerText = usuarioLogado.nome;
+            document.getElementById('user-role-display').innerText = usuarioLogado.cargo.toUpperCase();
+
+            configurarMenu(usuarioLogado.cargo);
+
+            if (usuarioLogado.cargo === 'vendedor') navegar('vendas');
+            else if (usuarioLogado.cargo === 'estoquista') navegar('estoque');
+            else navegar('admin');
+        }
+
+        function fazerLogout() {
+            usuarioLogado = null;
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('password').value = '';
+        }
+
+        function configurarMenu(cargo) {
+            document.querySelectorAll('.menu li').forEach(li => {
+                if(li.innerText.includes("Ir para a Loja") || li.innerText.includes("Sair")) {
+                     li.classList.add('visible'); 
+                } else {
+                    li.classList.remove('visible');
+                }
+            });
+
+            if (cargo === 'vendedor') document.getElementById('menu-vendas').classList.add('visible');
+            else if (cargo === 'estoquista') document.getElementById('menu-estoque').classList.add('visible');
+            else if (cargo === 'gerente') {
+                ['menu-vendas', 'menu-estoque', 'menu-admin', 'menu-usuarios'].forEach(id => {
+                    document.getElementById(id).classList.add('visible');
+                });
+            }
+        }
+
+        function navegar(tela) {
+            // Recarrega as vendas sempre que entrar na tela de admin
+            if(tela === 'admin') carregarHistoricoVendas();
+
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            const menuItems = document.querySelectorAll('.menu > li'); 
+            menuItems.forEach(el => el.classList.remove('active'));
+
+            document.getElementById(`view-${tela}`).classList.add('active');
+            const menu = document.getElementById(`menu-${tela}`);
+            if(menu) menu.classList.add('active');
+
+            if(tela === 'vendas') renderPDV();
+            if(tela === 'estoque') renderEstoque();
+            if(tela === 'admin') renderAdmin();
+            if(tela === 'usuarios') renderUsuarios();
+        }
+
+        // --- MÓDULO VENDAS (PDV) ---
+        function renderPDV() {
+            const container = document.getElementById('lista-produtos-pdv');
+            container.innerHTML = '';
+
+            dbProdutos.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'product-item';
+                const opacity = p.qtd > 0 ? '1' : '0.5';
+                
+                div.innerHTML = `
+                    <div class="prod-img-box" style="opacity: ${opacity}">
+                        <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150?text=IMG'">
+                    </div>
+                    <div class="prod-info">
+                        <div style="font-weight:600; font-size:0.9rem; height:40px; overflow:hidden; margin-bottom:5px;">${p.nome}</div>
+                        <div class="prod-price">R$ ${p.preco.toFixed(2)}</div>
+                        <div class="prod-stock" style="color: ${p.qtd < 5 ? 'red' : 'green'}">
+                            ${p.qtd > 0 ? p.qtd + ' unid.' : 'ESGOTADO'}
+                        </div>
+                    </div>
+                `;
+
+                if(p.qtd > 0) {
+                    div.onclick = () => addCarrinho(p);
+                } else {
+                    div.style.cursor = 'not-allowed';
+                }
+
+                container.appendChild(div);
+            });
+        }
+
+        function addCarrinho(produto) {
+            carrinho.push(produto);
+            atualizarCarrinhoVisual();
+        }
+
+        function atualizarCarrinhoVisual() {
+            const lista = document.getElementById('carrinho-lista');
+            const totalEl = document.getElementById('total-venda');
+            lista.innerHTML = '';
+            let total = 0;
+
+            if(carrinho.length === 0) {
+                lista.innerHTML = '<div style="text-align:center; color:#999; margin-top:50px;"><i class="fas fa-cart-arrow-down fa-2x"></i><br>Caixa Livre</div>';
+            }
+
+            carrinho.forEach((item, index) => {
+                total += item.preco;
+                lista.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px; align-items:center;">
+                        <div style="display:flex; align-items:center;">
+                            <img src="${item.img}" style="width:30px; height:30px; object-fit:contain; margin-right:5px;">
+                            <div style="font-size:0.85rem; width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.nome}</div>
+                        </div>
+                        <div style="font-size:0.9rem; font-weight:bold;">R$ ${item.preco.toFixed(2)}</div>
+                        <i class="fas fa-trash" style="color:var(--danger); cursor:pointer; margin-left:10px;" onclick="carrinho.splice(${index},1); atualizarCarrinhoVisual()"></i>
+                    </div>`;
+            });
+            totalEl.innerText = `R$ ${total.toFixed(2)}`;
+        }
+
+        function fecharVenda() {
+            if(carrinho.length === 0) return alert('Carrinho vazio!');
+            
+            // Abate estoque (visual)
+            carrinho.forEach(cItem => {
+                const prodReal = dbProdutos.find(p => p.id === cItem.id);
+                if(prodReal) prodReal.qtd--;
+            });
+
+            const total = carrinho.reduce((acc, i) => acc + i.preco, 0);
+            
+            // --- CRIA OBJETO DE VENDA ---
+            const novaVenda = {
+                id: Math.floor(Math.random() * 10000), // ID aleatório
+                vendedor: usuarioLogado.nome + " (PDV)", // Marca que foi venda interna
+                cliente: "Balcão",
+                status: "Pago",
+                total: total,
+                qtdItens: carrinho.length, // Compatível com script.js do site
+                itens: carrinho.length,    // Compatibilidade dupla
+                data: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})
+            };
+
+            // Adiciona na memória local e Salva no LocalStorage
+            dbVendas.push(novaVenda);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dbVendas));
+
+            alert(`Venda finalizada com sucesso!\nTotal: R$ ${total.toFixed(2)}`);
+            carrinho = [];
+            atualizarCarrinhoVisual();
+            renderPDV();
+        }
+
+        // --- MÓDULO ESTOQUE ---
+        function renderEstoque() {
+            const tbody = document.getElementById('tabela-estoque');
+            tbody.innerHTML = '';
+            
+            dbProdutos.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>
+                            <img src="${p.img}" class="img-thumb" onerror="this.src='https://via.placeholder.com/40'">
+                            <span style="font-weight:600">${p.nome}</span>
+                        </td>
+                        <td>R$ ${p.preco.toFixed(2)}</td>
+                        <td>
+                            <input type="number" id="stock-${p.id}" value="${p.qtd}" style="width:60px; padding:5px; border:1px solid #ccc; border-radius:4px;">
+                        </td>
+                        <td>
+                            <button class="quick-btn" style="background:var(--primary); color:white; border:none;" onclick="salvarEstoque(${p.id})">
+                                <i class="fas fa-save"></i> Salvar
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function salvarEstoque(id) {
+            const input = document.getElementById(`stock-${id}`);
+            const novoValor = parseInt(input.value);
+            
+            if(novoValor < 0) return alert("Estoque não pode ser negativo.");
+
+            const produto = dbProdutos.find(p => p.id === id);
+            produto.qtd = novoValor;
+            
+            const btn = input.parentElement.nextElementSibling.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> OK';
+            btn.style.background = 'var(--success)';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = 'var(--primary)';
+            }, 1500);
+        }
+
+        // --- MÓDULO ADMIN (ATUALIZADO PARA LER LOCALSTORAGE) ---
+        function renderAdmin() {
+            // Recarrega para garantir dados frescos
+            carregarHistoricoVendas();
+
+            const total = dbVendas.reduce((acc, v) => acc + v.total, 0);
+            document.getElementById('dash-fat').innerText = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('dash-vendas').innerText = dbVendas.length;
+
+            const ul = document.getElementById('log-vendas');
+            ul.innerHTML = '';
+            
+            if(dbVendas.length === 0) {
+                ul.innerHTML = '<li style="color:#777; padding:10px;">Nenhuma venda registrada no sistema.</li>';
+                return;
+            }
+
+            // Mostra do mais recente para o mais antigo
+            [...dbVendas].reverse().forEach(v => {
+                // Tenta pegar o nome do vendedor ou cliente do site
+                const origem = v.vendedor || v.cliente || "Cliente Online";
+                const itensCount = v.qtdItens || v.itens || 1;
+                
+                ul.innerHTML += `
+                    <li style="border-bottom:1px solid #eee; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-weight:bold; color:var(--primary)">Ped #${v.id} - ${origem}</div>
+                            <small style="color:#888">${v.data} • ${itensCount} itens</small>
+                        </div>
+                        <div style="text-align:right;">
+                             <strong style="color:var(--success)">${v.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>
+                             <br><small style="background:#e8f5e9; color:green; padding:2px 5px; border-radius:4px; font-size:0.7rem;">${v.status || 'Pago'}</small>
+                        </div>
+                    </li>
+                `;
+            });
+        }
+        
+        function zerarHistorico() {
+            if(confirm('Tem certeza que deseja apagar TODO o histórico de vendas (Site e Interno)?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                dbVendas = [];
+                renderAdmin();
+                alert('Histórico limpo!');
+            }
+        }
+
+        // --- MÓDULO USUÁRIOS ---
+        function renderUsuarios() {
+            const ul = document.getElementById('lista-equipe');
+            ul.innerHTML = '';
+            dbUsuarios.forEach(u => {
+                let icone = u.cargo === 'gerente' ? '👮‍♀️' : (u.cargo === 'vendedor' ? '👩‍💼' : '📦');
+                ul.innerHTML += `
+                    <li style="border-bottom:1px solid #eee; margin-bottom:5px;">
+                        ${icone} <strong>${u.nome}</strong> 
+                        <br><small style="color:#777">${u.email} | Cargo: ${u.cargo.toUpperCase()}</small>
+                    </li>`;
+            });
+        }
+
+        function cadastrarUsuario() {
+            const nome = document.getElementById('novo-nome').value;
+            const email = document.getElementById('novo-email').value;
+            const senha = document.getElementById('nova-senha').value;
+            const cargo = document.getElementById('novo-cargo').value;
+
+            if(!nome || !email || !senha) return alert('Preencha todos os campos.');
+
+            dbUsuarios.push({ id: Date.now(), nome, email, senha, cargo });
+            alert('Usuário cadastrado com sucesso!');
+            
+            document.getElementById('novo-nome').value = '';
+            document.getElementById('novo-email').value = '';
+            document.getElementById('nova-senha').value = '';
+            renderUsuarios();
+        }
+
+    </script>
+</body>
+</html>
